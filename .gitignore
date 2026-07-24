@@ -3,3 +3,6 @@ dist
 .DS_Store
 *.log
 .vite
+
+# Internal strategy/competitive research — never ships with the site
+research/
