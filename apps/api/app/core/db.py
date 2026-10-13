@@ -1,11 +1,13 @@
 """Database engine, session factory and declarative base."""
 
+import os
 import uuid
 from collections.abc import Iterator
 from datetime import UTC, datetime
 
 from sqlalchemy import CheckConstraint, DateTime, Engine, Enum, MetaData, create_engine, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
+from sqlalchemy.pool import NullPool
 from sqlalchemy.types import Uuid
 
 
@@ -60,6 +62,13 @@ def make_engine(url: str) -> Engine:
     kwargs: dict = {"pool_pre_ping": True}
     if url.startswith("sqlite"):
         kwargs["connect_args"] = {"check_same_thread": False}
+    elif url.startswith("postgresql"):
+        # Works behind PgBouncer / Supabase's transaction pooler, which can't keep
+        # server-side prepared statements between transactions.
+        kwargs["connect_args"] = {"prepare_threshold": None}
+        if os.environ.get("VERCEL"):
+            # Serverless: each instance is short-lived, so let the pooler do the pooling.
+            kwargs["poolclass"] = NullPool
     return create_engine(url, **kwargs)
 
 
