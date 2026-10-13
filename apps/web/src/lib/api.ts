@@ -1,5 +1,8 @@
 import { site } from '@/config/site'
 
+/** Joins the API base (which may include a path, e.g. a Supabase function URL) with an endpoint path. */
+const endpoint = (path: string) => `${site.apiUrl!.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`
+
 export type ApiResult<T = unknown> =
   | { ok: true; data: T }
   | { ok: false; status: number; message: string; fields: Record<string, string> }
@@ -25,7 +28,7 @@ function normalizeFields(raw: unknown): Record<string, string> {
 export async function apiPost<T = unknown>(path: string, body: unknown, init?: { method?: 'POST' | 'PUT' }): Promise<ApiResult<T>> {
   if (!site.apiUrl) return { ok: false, status: 0, message: 'This form isn’t connected yet.', fields: {} }
   try {
-    const res = await fetch(new URL(path, site.apiUrl), {
+    const res = await fetch(endpoint(path), {
       method: init?.method ?? 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -46,7 +49,7 @@ export async function apiPost<T = unknown>(path: string, body: unknown, init?: {
 export async function apiGet<T = unknown>(path: string): Promise<ApiResult<T>> {
   if (!site.apiUrl) return { ok: false, status: 0, message: 'Not connected.', fields: {} }
   try {
-    const res = await fetch(new URL(path, site.apiUrl))
+    const res = await fetch(endpoint(path))
     const json = await res.json().catch(() => ({}))
     if (res.ok) return { ok: true, data: json as T }
     const err = (json as { error?: { message?: string } }).error
