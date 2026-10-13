@@ -1,0 +1,91 @@
+{
+ "refs": [
+  "grid.png",
+  "thumb_shocked.png",
+  "thumb_worried.png",
+  "master.png"
+ ],
+ "base": "The attached images are the official character sheet of \"Alice\", a hand-drawn illustrated narrator. Image 1 is a grid of her facial expressions, images 2-3 are high-detail close-ups, image 4 is her full figure (for her hands and sweater).\n\nDraw a NEW head-and-shoulders close-up illustration of this EXACT same character, in this EXACT same drawing style:\n- same young woman, same age, same face shape (wide rounded jaw, simple flat face), same small triangular upturned nose shaded slightly darker, same simple black dot eyes with a tiny white highlight, same thick dark grey-brown eyebrows, same rosy cheeks\n- same large round thin dark-rimmed glasses\n- same long, very voluminous wavy dark-brown hair with a center part, falling past her shoulders\n- same plain rust / burnt-orange crewneck sweater (no logo, no pattern)\n- same colored-pencil hand-drawn texture with visible pencil strokes, flat matte coloring, clean black ink outline and a thick black outer contour around the whole silhouette\n- her eyes are tiny solid black vertical oval dots with NO eyelashes and NO iris detail; her mouth is a simple black line or a simple open mouth shape with NO drawn lips; the glasses rims are a single THIN black line (not thick frames); her face is wide and flat with a squarish rounded jaw, NOT a delicate pointed or doll-like face; the hair is a single big rounded mass with soft pencil texture, NOT individually drawn curls\n- NO makeup, NO lipstick, NO jewelry, NO earrings, NOT glossy, NOT 3D, NOT anime, NOT a different art style\n\nFraming: close-up from mid-chest up, the character centered and filling most of the frame, the whole head and hair fully inside the frame with some space above. Never full body. Her hands (if shown) must be simple cartoon hands like in the full-figure reference, with exactly five fingers each and correct anatomy.\n\nPOSE AND EXPRESSION: {POSE}\n\nBackground: a perfectly flat, solid pure magenta (#FF00FF) background filling the entire image edge to edge, no shadow, no gradient, no floor, no vignette, no frame. Nothing pink or magenta on the character or props. No text, no letters, no numbers, no logos, no watermark, no speech bubbles, no sweat drops, no extra symbols.",
+ "looks": [
+  {
+   "id": "hello",
+   "prompt": "A warm, open, friendly smile (mouth open in a happy smile), looking at the viewer. One hand raised beside her head in a friendly wave, open palm facing the viewer, five fingers spread."
+  },
+  {
+   "id": "explaining",
+   "prompt": "Mid-sentence, mouth open as if talking and explaining something, eyebrows lightly raised, engaged and friendly, looking at the viewer. One forearm raised in front of her, the hand held out to the side of her body at chest height with the open palm turned upward toward the viewer in a presenting gesture, as if saying 'here is how it works'. The hand does NOT touch her chest."
+  },
+  {
+   "id": "thinking",
+   "prompt": "Thinking: eyes looking up and to the side, mouth pursed slightly to one side, contemplative. One hand raised with the index finger and thumb resting on her chin."
+  },
+  {
+   "id": "magnifier",
+   "prompt": "Curious smile, leaning in a little. She holds a classic round magnifying glass (black handle, silver rim, clear lens) up in front of one eye, and that eye appears greatly enlarged through the lens. The other eye normal."
+  },
+  {
+   "id": "calculator",
+   "prompt": "Confident one-sided smirk, eyebrow slightly raised, looking at the viewer. She holds a small grey pocket calculator up beside her face in one hand; the calculator display is blank and the buttons are plain with no symbols."
+  },
+  {
+   "id": "reading-bill",
+   "prompt": "She holds a plain white sheet of paper (a bill) low in both hands at chest height, with only a few abstract grey lines on it, no readable text. Her head is tilted slightly DOWN and her round glasses have slid DOWN to the tip of her nose, so her eyes are ABOVE the glasses rims, peering at the viewer over the top of the glasses. One eyebrow raised high skeptically, mouth a small flat sideways line. Skeptical 'hmm, really?' look."
+  },
+  {
+   "id": "phone",
+   "prompt": "Pleased, satisfied closed-mouth smile, looking at the viewer. She holds a dark grey smartphone in one hand near her chest, screen facing her (we see the back of the phone)."
+  },
+  {
+   "id": "laughing",
+   "prompt": "A big genuine laugh: eyes squeezed shut into happy arcs, mouth wide open laughing showing teeth and tongue, head tilted back slightly, cheeks very rosy. One hand loosely near her mouth/chest."
+  },
+  {
+   "id": "surprised",
+   "prompt": "Surprised: eyes wide open, eyebrows raised high, mouth a small round open 'oh!' shape. One hand pressed flat against her cheek."
+  },
+  {
+   "id": "confused",
+   "prompt": "Confused, exactly like the bottom-right face of image 1: head tilted to one side, one thick eyebrow raised higher than the other, one eye slightly squinted, and the mouth drawn as a small simple dark squiggle line pushed to one side of the face (NOT pink lips, NOT a kissy pout). No hands visible."
+  },
+  {
+   "id": "thumbs-up",
+   "prompt": "Big wide toothy grin, eyes happy, looking at the viewer. One hand raised near her shoulder giving a clear thumbs up (thumb pointing up, four fingers curled)."
+  },
+  {
+   "id": "wink",
+   "prompt": "Playful wink (one eye closed in a curved line, the other open) with a little sly smile. One hand extended toward the viewer, pointing at the viewer with the index finger, other fingers curled."
+  },
+  {
+   "id": "idea",
+   "prompt": "'I've got it!' moment: bright excited expression, eyes wide and sparkling, eyebrows raised, open happy mouth. One hand raised beside her head with the index finger pointing straight up. (No light bulb.)"
+  },
+  {
+   "id": "determined",
+   "prompt": "Determined and confident: focused eyes looking straight at the viewer, eyebrows lowered and firm, a small confident closed-mouth smile, chin slightly lowered as in a nod. The sleeves of her sweater are pushed up to her elbows showing her forearms, both forearms raised in front of her chest with hands in loose fists, ready to get to work."
+  },
+  {
+   "id": "relieved",
+   "prompt": "Relieved and content: eyes gently closed in calm curved lines, a soft content smile, shoulders relaxed. One hand placed flat on her chest over her heart."
+  },
+  {
+   "id": "mic",
+   "prompt": "Smiling, mouth slightly open as if narrating, looking at the viewer. She holds a small black podcast-style microphone in one hand in front of her chin."
+  },
+  {
+   "id": "shopping",
+   "prompt": "Happy cheerful smile, looking at the viewer. A plain beige canvas tote bag hangs from her shoulder; one hand holds the tote bag's strap at her shoulder. The tote bag is plain with no print."
+  },
+  {
+   "id": "mug",
+   "prompt": "Cozy, warm closed-eye-ish soft smile with eyes half-open looking at the viewer. She holds a plain cream-white coffee mug in both hands close under her chin, a little curl of steam rising."
+  },
+  {
+   "id": "book",
+   "prompt": "She holds an open hardcover book (dark teal cover) in both hands at chest height, pages showing only faint grey lines, and she looks up from it at the viewer with a small gentle smile."
+  },
+  {
+   "id": "worried",
+   "prompt": "Slightly worried: eyebrows tilted up in the middle, biting her lower lip, eyes glancing to the side toward something off-frame. No sweat drop. No hands visible."
+  }
+ ]
+}
