@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+/*
+ * Billix design tokens.
+ * Palette comes from the Billix logo (piggy bank on cash). Change a value here and it
+ * flows through every Tailwind utility (bg-teal, text-ink, border-line, ...).
+ */
+@theme {
+  /* Surfaces: clean warm white, with the logo's cream kept for accents. */
+  --color-cream: #fbfaf7;        /* page canvas */
+  --color-paper: #ffffff;        /* cards, raised surfaces */
+  --color-sand: #f2efe8;         /* subtle fills */
+  --color-mist: #f5f3ee;         /* alternate sections */
+  --color-receipt: #f6efdc;      /* bill/receipt paper accent (logo cream) */
+  --color-teal: #2c7a72;         /* primary */
+  --color-teal-ink: #1f5f58;     /* teal text on light bg (AA) */
+  --color-teal-soft: #dcebe7;
+  --color-teal-deep: #163f3b;    /* dark sections, headings */
+  --color-teal-night: #0f2e2b;
+  --color-gold: #e3a63c;         /* primary CTA, highlighter */
+  --color-gold-soft: #f8e6bf;
+  --color-highlight: #f5c451;    /* thumbnail-style marker */
+  --color-plum: #8a6ba0;
+  --color-plum-soft: #ece4f2;
+  --color-cash: #7fa06f;
+  --color-cash-soft: #e4eddc;
+  --color-clay: #c9764f;         /* Alice's sweater */
+  --color-ink: #17312e;          /* body text */
+  --color-muted: #586764;        /* secondary text */
+  --color-line: #e7e3da;         /* borders */
+  --color-line-soft: #efece5;
+  --color-danger: #a8402f;
+  --color-success: #2f6d3a;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-receipt), ui-monospace, SFMono-Regular, monospace;
+
+  --radius-card: 1.25rem;
+  --radius-panel: 1.75rem;
+
+  --shadow-card: 0 1px 0 rgba(22, 63, 59, 0.04), 0 10px 30px -18px rgba(22, 63, 59, 0.35);
+  --shadow-lift: 0 2px 0 rgba(22, 63, 59, 0.05), 0 24px 50px -24px rgba(22, 63, 59, 0.45);
+
+  --animate-rise: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-float: float 7s ease-in-out infinite;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pop {
+    from { opacity: 0.4; transform: scale(0.92) translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  ::selection { background: var(--color-gold-soft); color: var(--color-teal-night); }
+  :focus-visible {
+    outline: 3px solid var(--color-gold);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  [id] { scroll-margin-top: 6rem; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+}
+
+@layer components {
+  .container-x {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 640px) { .container-x { padding-inline: 1.5rem; } }
+  @media (min-width: 1024px) { .container-x { padding-inline: 2rem; } }
+
+  /* Small functional label (footer columns, "On this page", result panels). */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  /* Thumbnail-style marker highlight behind a word. */
+  .mark {
+    background: linear-gradient(transparent 12%, var(--color-highlight) 12%, var(--color-highlight) 92%, transparent 92%);
+    padding: 0 0.12em;
+    border-radius: 0.12em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  /* Paper receipt edge used on bill illustrations. */
+  .receipt-edge {
+    --tooth: 9px;
+    mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--tooth)) 100%;
+  }
+
+  /* Scroll reveal (see components/ui/reveal.tsx). */
+  .js [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+  .js [data-reveal][data-shown] { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .js [data-reveal] { opacity: 1; transform: none; } }
+
+  /* Long-form reading text (articles, legal, category guides). */
+  .prose-billix { font-size: 1.0625rem; line-height: 1.75; color: var(--color-ink); }
+  .prose-billix p + p { margin-top: 1rem; }
+  .prose-billix a { color: var(--color-teal-ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  .prose-billix a:hover { text-decoration-thickness: 2px; }
+  .prose-billix strong { font-weight: 650; }
+}
+
+@media print {
+  .no-print, header[data-site-header], footer[data-site-footer] { display: none !important; }
+  body { background: white; }
+  .prose-billix a::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+}

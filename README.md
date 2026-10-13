@@ -1,44 +1,59 @@
-# Billix — Contact Website
+# Billix
 
-A single-page, contact-focused marketing site for **Billix**, the connective layer for
-utility crisis assistance. Static HTML/CSS/JS — no build step, deploys anywhere.
+**Understand Your Bills. Keep More of Your Money.**
 
-## Structure
+Billix is an educational platform that explains the household bills people pay: why costs change, how charges are calculated and what options exist. Guides, calculators and videos are narrated by Alice.
 
 ```
-index.html      Page markup (nav, hero, what/who/why, contact form, footer)
-css/styles.css  Styling — brand palette pulled from the Billix iOS app
-js/main.js      Footer year + contact form (opens a pre-filled email to info@billixapp.com)
+apps/web   Next.js 16 website (TypeScript, Tailwind CSS 4)
+apps/api   FastAPI + SQLAlchemy + Alembic API (newsletter, waitlist, contact, community)
+docs/      Architecture and roadmap
 ```
+
+- Architecture, sitemap, data model, security: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- Phases and status: [docs/ROADMAP.md](docs/ROADMAP.md)
+- API details: [apps/api/README.md](apps/api/README.md)
 
 ## Run locally
 
-Just open `index.html` in a browser, or serve it:
+Requirements: Node 20.9+ and Python 3.12. PostgreSQL 16 for the API (SQLite works for a quick local try).
 
 ```bash
-python3 -m http.server 8000
-# then visit http://localhost:8000
+# API
+cd apps/api
+python3.12 -m venv .venv && .venv/bin/pip install -e '.[dev]'
+cp .env.example .env            # set DATABASE_URL (with password) and secrets
+.venv/bin/alembic upgrade head
+.venv/bin/uvicorn app.main:app --reload --port 8000
+
+# Website (second terminal)
+cd apps/web
+npm install
+cp .env.example .env.local
+npm run dev                     # http://localhost:3000
 ```
 
-## Deploy (GitHub Pages)
+Without `NEXT_PUBLIC_API_URL`, the site still runs; forms show an "opens soon" notice instead of pretending to work.
 
-Settings → Pages → Deploy from branch → `main` / root. Done.
+## Test
 
-## Contact form
+```bash
+cd apps/web && npm run check      # typecheck + lint + unit/content-integrity tests
+cd apps/web && npm run test:e2e   # Playwright (builds and starts the site)
+cd apps/api && .venv/bin/pytest && .venv/bin/ruff check .
+```
 
-The form has no backend — on submit it opens the visitor's email client pre-filled to
-`info@billixapp.com`. To wire a real backend, replace the submit handler in `js/main.js`
-with a `fetch()` to Formspree, a serverless function, or your own API.
+## Editing content
+
+All editorial content is typed data in `apps/web/src/content/`. Every factual claim cites a source with `[^n]`; the content-integrity tests fail on broken citations, unknown internal links, emoji, or products marked for sale. To publish a video, set its `youtubeId` in `src/content/videos.ts`.
 
 ## Brand colors
 
-Palette drawn straight from the Billix logo (piggy bank on cash).
-
-| Token       | Hex       | Use                     |
-| ----------- | --------- | ----------------------- |
-| Cream       | `#f4ead0` | page background         |
-| Teal        | `#2c7a72` | primary — buttons/links |
-| Deep teal   | `#163f3b` | dark sections, ink      |
-| Gold        | `#e3a63c` | accent, primary CTA     |
-| Plum        | `#8a6ba0` | accent (pig)            |
-| Cash green  | `#7fa06f` | accent (dollars)        |
+| Token | Hex | Use |
+|---|---|---|
+| Cream | `#f4ead0` | page background |
+| Teal | `#2c7a72` | primary: buttons/links |
+| Deep teal | `#163f3b` | dark sections, ink |
+| Gold | `#e3a63c` | accent, primary CTA |
+| Plum | `#8a6ba0` | accent (pig) |
+| Cash green | `#7fa06f` | accent (dollars) |

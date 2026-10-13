@@ -1,0 +1,11 @@
+# The Vercel project builds apps/web only.
+apps/api
+**/.venv
+**/node_modules
+**/.next
+**/test-results
+**/playwright-report
+apps/web/apps
+apps/web/scripts
+.env
+**/.env.local
