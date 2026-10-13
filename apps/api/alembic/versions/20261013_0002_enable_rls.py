@@ -25,6 +25,7 @@ TABLES = (
     'contact_messages',
     'newsletter_subscribers',
     'waitlist_entries',
+    'alembic_version',
 )
 
 
@@ -40,7 +41,7 @@ def upgrade() -> None:
         BEGIN
           IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
             REVOKE ALL ON community_questions, community_video_ideas, contact_messages,
-              newsletter_subscribers, waitlist_entries FROM anon, authenticated;
+              newsletter_subscribers, waitlist_entries, alembic_version FROM anon, authenticated;
           END IF;
         END $$;
         """
