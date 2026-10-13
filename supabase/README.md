@@ -16,7 +16,9 @@ Supabase injects, so no database password is stored anywhere.
   `anon`/`authenticated` roles have no grants, so the public Data API can't read them.
 
 Optional function secrets (Supabase → Edge Functions → Secrets):
-`RESEND_API_KEY` + `EMAIL_FROM` (send real email; otherwise emails are logged),
+`RESEND_API_KEY` (send real email; otherwise emails are logged). Defaults: from
+`info@emails.billixapp.com` (the Resend-verified subdomain), replies to and contact
+alerts at `info@billixapp.com`; override with `EMAIL_FROM`, `EMAIL_REPLY_TO`,
 `CONTACT_INBOX`, `SITE_URL`, `CORS_ORIGINS`, `TOKEN_SECRET`, `IP_HASH_SALT`.
 
 Read submissions in the Supabase Table Editor: `contact_messages`,
