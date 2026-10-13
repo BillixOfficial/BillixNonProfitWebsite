@@ -21,6 +21,11 @@ const PREVIEW_ORIGIN = /^https:\/\/billix-website-[a-z0-9-]+-billix2\.vercel\.ap
 const CONSENT_VERSION = env('NEWSLETTER_CONSENT_VERSION') ?? '2026-10-v1'
 const CONFIRM_TTL_HOURS = 48
 const LIMITS = { write: 5, token: 20 } as const // per IP per minute
+// Resend is verified for emails.billixapp.com, so mail is sent from that subdomain;
+// replies and contact-form alerts go to the main inbox.
+const EMAIL_FROM = env('EMAIL_FROM') ?? 'The Billix Brief <info@emails.billixapp.com>'
+const REPLY_TO = env('EMAIL_REPLY_TO') ?? 'info@billixapp.com'
+const CONTACT_INBOX = env('CONTACT_INBOX') ?? 'info@billixapp.com'
 
 const db = createClient(env('SUPABASE_URL') ?? '', SERVICE_KEY, { auth: { persistSession: false } })
 
@@ -159,7 +164,7 @@ async function sendMail(m: Mail) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: env('EMAIL_FROM') ?? 'The Billix Brief <brief@billixapp.com>', to: [m.to], subject: m.subject, text: m.text, ...(m.replyTo ? { reply_to: m.replyTo } : {}) }),
+    body: JSON.stringify({ from: EMAIL_FROM, to: [m.to], subject: m.subject, text: m.text, reply_to: m.replyTo ?? REPLY_TO }),
   })
   if (!res.ok) console.error(JSON.stringify({ msg: 'email_failed', kind: m.kind, status: res.status }))
 }
@@ -307,8 +312,7 @@ async function contact(b: Body, ipHash: string | null) {
   if (bot) return { reference, message: CONTACT_THANKS }
   const { error } = await db.from('contact_messages').insert({ id: crypto.randomUUID(), reference, name, email, topic, message, status: 'new', ip_hash: ipHash, created_at: now(), updated_at: now() })
   if (error) throw error
-  const inbox = env('CONTACT_INBOX')
-  if (inbox) background(sendMail({ to: inbox, replyTo: email, kind: 'contact_notification', subject: `[Billix contact · ${topic}] ${reference}`, text: `Reference: ${reference}\nTopic: ${topic}\nFrom: ${name} <${email}>\n\n${message}\n` }))
+  background(sendMail({ to: CONTACT_INBOX, replyTo: email, kind: 'contact_notification', subject: `[Billix contact · ${topic}] ${reference}`, text: `Reference: ${reference}\nTopic: ${topic}\nFrom: ${name} <${email}>\n\n${message}\n` }))
   return { reference, message: CONTACT_THANKS }
 }
 
