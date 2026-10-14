@@ -23,7 +23,7 @@ function allStrings(value: unknown): string[] {
   return []
 }
 
-const staticRoutes = new Set(['/', '/categories', '/learn', '/videos', '/updates', '/glossary', '/tools', '/tools/electricity-cost', '/compare', '/compare/electricity-plans', '/shop', '/cart', '/account', '/community', '/community/guidelines', '/app', '/social', '/states', '/ask-alice', '/newsletter', '/meet-alice', '/contact', '/business', '/search'])
+const staticRoutes = new Set(['/', '/categories', '/learn', '/videos', '/updates', '/glossary', '/tools', '/tools/electricity-cost', '/compare', '/compare/electricity-plans', '/shop', '/cart', '/account', '/community', '/community/guidelines', '/bill-of-the-month', '/app', '/social', '/states', '/ask-alice', '/newsletter', '/meet-alice', '/contact', '/business', '/search'])
 const dynamicRoutes = new Set([
   ...getCategories().map((c) => `/categories/${c.slug}`),
   ...getAllArticles().map((a) => `/learn/${a.slug}`),

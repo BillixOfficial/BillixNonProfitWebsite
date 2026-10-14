@@ -70,6 +70,7 @@ export const footerNav: { title: string; links: NavLink[] }[] = [
       { label: 'Compare', href: '/compare' },
       { label: 'Ask Alice', href: '/ask-alice' },
       { label: 'Newsletter', href: '/newsletter' },
+      { label: 'Bill of the Month', href: '/bill-of-the-month' },
       { label: 'Glossary', href: '/glossary' },
       { label: 'Help Center', href: '/help' },
     ],

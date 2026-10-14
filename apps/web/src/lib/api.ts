@@ -60,3 +60,23 @@ export async function apiGet<T = unknown>(path: string): Promise<ApiResult<T>> {
 }
 
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+/** Multipart upload (a form with a file). Same result shape as apiPost. */
+export async function apiUpload<T = unknown>(path: string, form: FormData): Promise<ApiResult<T>> {
+  if (!site.apiUrl) return { ok: false, status: 0, message: 'This form isn’t connected yet.', fields: {} }
+  try {
+    const res = await fetch(endpoint(path), { method: 'POST', body: form })
+    const json = await res.json().catch(() => ({}))
+    if (res.ok) return { ok: true, data: json as T }
+    const err = (json as { error?: { message?: string; fields?: unknown } }).error
+    const message =
+      res.status === 429
+        ? 'Too many attempts. Please wait a minute and try again.'
+        : res.status === 413
+          ? 'That file is too large. The limit is 10 MB.'
+          : err?.message ?? 'Something went wrong. Please try again.'
+    return { ok: false, status: res.status, message, fields: normalizeFields(err?.fields) }
+  } catch {
+    return { ok: false, status: 0, message: 'We couldn’t reach Billix. Check your connection and try again.', fields: {} }
+  }
+}
