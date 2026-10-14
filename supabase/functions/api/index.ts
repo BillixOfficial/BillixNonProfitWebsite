@@ -20,7 +20,7 @@ const ALLOWED_ORIGINS = (env('CORS_ORIGINS') ??
 const PREVIEW_ORIGIN = /^https:\/\/billix-website-[a-z0-9-]+-billix2\.vercel\.app$/
 const CONSENT_VERSION = env('NEWSLETTER_CONSENT_VERSION') ?? '2026-10-v1'
 const CONFIRM_TTL_HOURS = 48
-const LIMITS = { write: 5, token: 20 } as const // per IP per minute
+const LIMITS = { write: 5, token: 20, upload: 3 } as const // per IP per minute
 // Resend is verified for emails.billixapp.com, so mail is sent from that subdomain;
 // replies and contact-form alerts go to the main inbox.
 const EMAIL_FROM = env('EMAIL_FROM') ?? 'The Billix Brief <info@emails.billixapp.com>'
@@ -350,6 +350,168 @@ async function videoIdea(b: Body, ipHash: string | null) {
   return { id, moderation_status: 'pending', message: 'Thanks! Your video idea is in our review queue.' }
 }
 
+
+// ---------- Bill of the Month ----------
+// Two separate activities: the free $50 drawing (contact details only) and an optional
+// bill for a video breakdown. Bills go to the private `bill-entries` bucket (never public;
+// read via the dashboard or short-lived signed URLs). Closed until bill_of_month_settings
+// says otherwise. One submission per email per round (16th to 15th, ET).
+const BOTM_BUCKET = 'bill-entries'
+const BOTM_MAX_BYTES = 10 * 1024 * 1024
+const BOTM_RETENTION_DAYS = Number(env('BOTM_RETENTION_DAYS') ?? 90)
+const BILL_TYPES = ['electric', 'gas', 'heating-oil', 'propane', 'water-sewer', 'trash', 'internet', 'phone', 'tv'] as const
+const BILL_LABELS: Record<string, string> = { electric: 'electric', gas: 'natural gas', 'heating-oil': 'heating oil', propane: 'propane', 'water-sewer': 'water/sewer', trash: 'trash', internet: 'internet', phone: 'phone', tv: 'TV' }
+const HEARD_FROM = ['youtube', 'tiktok', 'website', 'friend', 'other'] as const
+const YOUTUBE_URL = env('YOUTUBE_URL') ?? 'https://www.youtube.com/channel/UCt9vN1jnKS5UJuqqlhlUixQ'
+const BOTM_THANKS = "Thanks! We sent a confirmation to your email. If you entered the drawing and win, we'll email you within 7 days after this round closes on the 15th."
+
+// Periods run from the 16th of one month through 11:59 p.m. ET on the 15th of the next,
+// and are named for the month they end in: '2026-11' = through Nov 15, 2026.
+const botmPeriod = (d = new Date()) => {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(d)
+  const get = (t: string) => Number(parts.find((p) => p.type === t)!.value)
+  let y = get('year'), m = get('month')
+  if (get('day') > 15) [y, m] = m === 12 ? [y + 1, 1] : [y, m + 1]
+  const period = `${y}-${String(m).padStart(2, '0')}`
+  // The first round is longer (it opens mid-October and closes Nov 15), so anything
+  // before it counts toward it. 'YYYY-MM' strings compare correctly as text.
+  const first = env('BOTM_FIRST_ROUND') ?? '2026-11'
+  return period < first ? first : period
+}
+// Open/close switch: the single row in bill_of_month_settings (editable in the Supabase
+// Table Editor). BOTM_OPEN_FROM / BOTM_CLOSE_AFTER secrets override it if set. Entries
+// are closed unless open_from is set and has passed. Cached for a minute per instance.
+let botmWindow: { from: number | null; until: number | null; at: number } | null = null
+async function botmOpen() {
+  if (!botmWindow || Date.now() - botmWindow.at > 60_000) {
+    let from = env('BOTM_OPEN_FROM') ?? null
+    let until = env('BOTM_CLOSE_AFTER') ?? null
+    if (!from) {
+      const { data } = await db.from('bill_of_month_settings').select('open_from,close_after').eq('id', 1).maybeSingle()
+      from = data?.open_from ?? null
+      until = until ?? data?.close_after ?? null
+    }
+    const ts = (v: string | null) => (v && !Number.isNaN(Date.parse(v)) ? Date.parse(v) : null)
+    botmWindow = { from: ts(from), until: ts(until), at: Date.now() }
+  }
+  const t = Date.now()
+  return botmWindow.from !== null && t >= botmWindow.from && !(botmWindow.until !== null && t > botmWindow.until)
+}
+// Identify the file by its first bytes, not by the name or the browser's claim.
+function sniff(b: Uint8Array): { mime: string; ext: string } | null {
+  const at = (o: number, sig: number[]) => sig.every((x, i) => b[o + i] === x)
+  if (at(0, [0xff, 0xd8, 0xff])) return { mime: 'image/jpeg', ext: 'jpg' }
+  if (at(0, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) return { mime: 'image/png', ext: 'png' }
+  if (at(0, [0x52, 0x49, 0x46, 0x46]) && at(8, [0x57, 0x45, 0x42, 0x50])) return { mime: 'image/webp', ext: 'webp' }
+  if (at(0, [0x25, 0x50, 0x44, 0x46, 0x2d])) return { mime: 'application/pdf', ext: 'pdf' }
+  if (at(4, [0x66, 0x74, 0x79, 0x70])) {
+    const brand = String.fromCharCode(...b.slice(8, 12))
+    if (['heic', 'heix', 'mif1', 'msf1', 'heim', 'heis'].includes(brand)) return { mime: 'image/heic', ext: 'heic' }
+  }
+  return null
+}
+
+// Campaign tag from links like ?src=yt-short-announce (lowercase letters, digits, dashes).
+const cleanSrc = (v: unknown) => (typeof v === 'string' && /^[a-z0-9-]{1,40}$/.test(v) ? v : null)
+
+// Remove entries (rows and files) past the retention window, except winners and bills used in a video.
+async function botmPurge() {
+  const cutoff = new Date(Date.now() - BOTM_RETENTION_DAYS * 86_400_000).toISOString()
+  const { data } = await db.from('bill_of_month_entries').select('id,file_path').neq('status', 'winner').eq('featured', false).lt('created_at', cutoff).limit(200)
+  if (!data?.length) return
+  const paths = data.map((r) => r.file_path).filter(Boolean) as string[]
+  if (paths.length) await db.storage.from(BOTM_BUCKET).remove(paths)
+  await db.from('bill_of_month_entries').delete().in('id', data.map((r) => r.id))
+}
+
+async function billOfTheMonth(req: Request, ipHash: string | null) {
+  if (!(await botmOpen())) throw new ApiError(403, 'closed', "Bill of the Month isn't open for entries right now. Check back soon.")
+  if (!(req.headers.get('content-type') ?? '').includes('multipart/form-data')) throw new ApiError(415, 'unsupported_media_type', 'Send the form as multipart/form-data.')
+  const len = Number(req.headers.get('content-length') ?? 0)
+  if (len > BOTM_MAX_BYTES + 64_000) throw new ApiError(413, 'payload_too_large', 'That file is too large. The limit is 10 MB.')
+  let form: FormData
+  try {
+    form = await req.formData()
+  } catch {
+    throw new ApiError(422, 'validation_error', 'We could not read that form.')
+  }
+  const file = form.get('bill')
+  const b: Body = {}
+  for (const [k, val] of form.entries()) if (k !== 'bill') b[k] = typeof val === 'string' ? val : '[file]'
+  // Checkboxes arrive as text in multipart forms.
+  for (const k of ['eligible', 'enter_drawing', 'add_bill', 'consent_credit', 'consent_feature', 'redaction_confirmed']) if (k in b) b[k] = b[k] === 'true'
+  const v = new V(b, ['first_name', 'state', 'email', 'bill_type', 'note', 'heard_from', 'src', 'enter_drawing', 'add_bill', 'redaction_confirmed', 'consent_feature', 'eligible', 'consent_credit', 'website'])
+  const firstName = v.str('first_name', { max: 60 })
+  const state = v.str('state', { min: 2, max: 2 })?.toUpperCase()
+  if (state && (!STATES.has(state) || state === 'PR')) v.fields.state ??= 'Entries are open to the 50 states and D.C.'
+  const email = v.email('email')
+  const heardFrom = b.heard_from ? v.oneOf('heard_from', HEARD_FROM) : undefined
+  v.isTrue('eligible')
+  const src = cleanSrc(b.src)
+  // Two separate activities in one submission:
+  //  - enter_drawing: the free $50 drawing. Only contact details and eligibility are needed.
+  //  - add_bill: an optional bill for a possible video breakdown. It never affects the drawing.
+  const enterDrawing = b.enter_drawing === true
+  const addBill = b.add_bill === true
+  const hasFile = file instanceof File && file.size > 0
+  if (!enterDrawing && !addBill) v.fields.enter_drawing ??= 'Choose the drawing, a bill breakdown, or both.'
+  const billType = addBill ? v.oneOf('bill_type', BILL_TYPES) : undefined
+  const note = addBill ? v.str('note', { min: 0, max: 1000, optional: true }) : undefined
+  const consentFeature = addBill && b.consent_feature === true
+  const consentCredit = consentFeature && b.consent_credit === true
+  const bot = v.honeypot()
+  if (addBill) {
+    if (!hasFile) v.fields.bill ??= 'Attach a photo or PDF of your bill.'
+    else if ((file as File).size > BOTM_MAX_BYTES) v.fields.bill ??= 'That file is too large. The limit is 10 MB.'
+    if (b.redaction_confirmed !== true) v.fields.redaction_confirmed ??= 'Please confirm you covered your personal details.'
+  } else if (hasFile) v.fields.bill ??= 'Remove the file, or choose to send a bill for a breakdown.'
+  v.done()
+  if (bot) return { message: BOTM_THANKS }
+
+  let bytes: Uint8Array<ArrayBuffer> | null = null
+  let kind: { mime: string; ext: string } | null = null
+  if (addBill) {
+    bytes = new Uint8Array(await (file as File).arrayBuffer())
+    kind = sniff(bytes)
+    if (!kind) throw new ApiError(422, 'validation_error', 'Some fields are invalid.', { bill: 'Upload a JPG, PNG, WebP, HEIC or PDF file.' })
+  }
+
+  const period = botmPeriod()
+  const { data: dup } = await db.from('bill_of_month_entries').select('id').eq('email', email!).eq('period', period).maybeSingle()
+  if (dup) throw new ApiError(409, 'duplicate_entry', "You've already sent an entry this round. You can enter again when the next round opens on the 16th.")
+
+  const id = crypto.randomUUID()
+  const path = kind ? `${period}/${id}.${kind.ext}` : null
+  if (path) {
+    const up = await db.storage.from(BOTM_BUCKET).upload(path, bytes!, { contentType: kind!.mime, upsert: false })
+    if (up.error) throw up.error
+  }
+  const { error } = await db.from('bill_of_month_entries').insert({
+    id, period, enter_drawing: enterDrawing, first_name: firstName, state, email, bill_type: billType ?? null, note: note || null,
+    heard_from: heardFrom ?? null, src, consent_feature: consentFeature, consent_credit: consentCredit,
+    eligibility_confirmed_at: now(), redaction_confirmed_at: addBill ? now() : null,
+    file_path: path, file_mime: kind?.mime ?? null, file_size: bytes?.length ?? null,
+    file_sha256: bytes ? hex(await crypto.subtle.digest('SHA-256', bytes)) : null,
+    status: 'received', ip_hash: ipHash, created_at: now(), updated_at: now(),
+  })
+  if (error) {
+    if (path) await db.storage.from(BOTM_BUCKET).remove([path])
+    if ((error as { code?: string }).code === '23505') throw new ApiError(409, 'duplicate_entry', "You've already sent an entry this round. You can enter again when the next round opens on the 16th.")
+    throw error
+  }
+  background(sendMail({
+    to: email!, kind: 'botm_entry',
+    subject: enterDrawing ? "You're entered: Billix Bill of the Month" : 'We got your bill: Billix Bill of the Month',
+    text: `Hi ${firstName},\n\n` +
+      (enterDrawing ? "You're entered in this round's $50 Bill of the Month drawing. It closes at 11:59 p.m. ET on the 15th. One random entry wins $50 paid toward their bill. If you win, we'll email you from this address within 7 days after the round closes.\n\n" : '') +
+      (addBill ? `${enterDrawing ? 'We also got' : 'We got'} your ${BILL_LABELS[billType!]} bill for a possible video breakdown.${consentFeature ? '' : " You didn't give permission to show it, so we'll only use it privately to decide what to explain."} Sending a bill doesn't change anyone's odds in the drawing.\n\n` : '') +
+      "We will never ask for your password, card number or a payment.\n\nSubscribe on YouTube to follow the bill breakdowns and winner announcements. (Subscribing isn't required to win and doesn't change your odds.)\n" +
+      `${YOUTUBE_URL}\n\nOfficial rules: ${SITE_URL}/legal/bill-of-the-month-rules\n\nThe Billix team\n`,
+  }))
+  if (Math.random() < 0.05) background(botmPurge())
+  return { message: BOTM_THANKS }
+}
+
 // ---------- router ----------
 Deno.serve(async (req) => {
   const headers = cors(req.headers.get('origin'))
@@ -418,6 +580,17 @@ Deno.serve(async (req) => {
         await rateLimit(ipHash, 'write')
         return json(201, await videoIdea(b, ipHash), headers)
       }
+      case 'GET /v1/bill-of-the-month/status': {
+        // Cookie-free visit count for measuring conversion (visits -> entries) by source.
+        const open = await botmOpen()
+        if (url.searchParams.get('view') === '1' && open) {
+          background(Promise.resolve(db.from('bill_of_month_page_views').insert({ period: botmPeriod(), src: cleanSrc(url.searchParams.get('src')), ip_hash: ipHash })))
+        }
+        return json(200, { open, period: botmPeriod() }, headers)
+      }
+      case 'POST /v1/bill-of-the-month/entries':
+        await rateLimit(ipHash, 'upload')
+        return json(201, await billOfTheMonth(req, ipHash), headers)
       default:
         throw new ApiError(404, 'not_found', 'Not found.')
     }
