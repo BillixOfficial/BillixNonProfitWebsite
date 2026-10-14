@@ -6,6 +6,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { clsx } from 'clsx'
 import { ChevronDown, Menu, Search, UserRound, X } from 'lucide-react'
 import { CartButton } from '@/components/shop/product-ui'
+import { features } from '@/config/site'
 import { SocialIconRow } from '@/components/brand/social-links'
 import { primaryNav, type NavItem } from '@/config/navigation'
 import { Logo } from '@/components/brand/alice'
@@ -156,7 +157,7 @@ export function SiteHeader() {
           <Link href="/account" className="grid size-10 place-items-center rounded-full text-teal-deep hover:bg-teal-deep/6" aria-label="Account">
             <UserRound className="size-5" aria-hidden />
           </Link>
-          <CartButton />
+          {features.shopOpen && <CartButton />}
           <button type="button" className="grid size-10 place-items-center rounded-full text-teal-deep hover:bg-teal-deep/6 xl:hidden" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-nav" onClick={() => setMenuOpen((o) => !o)}>
             {menuOpen ? <X className="size-6" aria-hidden /> : <Menu className="size-6" aria-hidden />}
           </button>

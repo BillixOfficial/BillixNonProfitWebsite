@@ -4,6 +4,7 @@ import { AliceFace, AliceNote } from '@/components/brand/alice'
 import { AliceMoods } from '@/components/brand/alice-moods'
 import { ButtonLink, Section } from '@/components/ui/primitives'
 import { getVideos } from '@/lib/content'
+import { features } from '@/config/site'
 import { VideoCard } from '@/components/content/cards'
 
 export const metadata: Metadata = {
@@ -47,7 +48,7 @@ export default function MeetAlicePage() {
       <Section tone="paper">
         <h2 className="text-3xl font-extrabold text-teal-deep">Watch Alice explain</h2>
         <div className="mt-8 grid gap-5 md:grid-cols-3">{videos.map((v) => <VideoCard key={v.slug} v={v} />)}</div>
-        <p className="mt-8 text-muted">Alice learning books and merchandise for kids and families are planned for the <Link href="/shop/collections/alice" className="font-semibold text-teal-ink underline">Alice Collection</Link>.</p>
+        <p className="mt-8 text-muted">Alice learning books and merchandise for kids and families are planned for the <Link href={features.shopOpen ? '/shop/collections/alice' : '/shop'} className="font-semibold text-teal-ink underline">{features.shopOpen ? 'Alice Collection' : 'Billix Shop'}</Link>.</p>
       </Section>
     </>
   )

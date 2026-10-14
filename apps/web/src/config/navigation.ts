@@ -1,4 +1,5 @@
 import { categoryIndex } from '@/content/category-index'
+import { features } from '@/config/site'
 
 export interface NavLink {
   label: string
@@ -88,12 +89,14 @@ export const footerNav: { title: string; links: NavLink[] }[] = [
   },
   {
     title: 'Shop',
-    links: [
-      { label: 'Books', href: '/shop/collections/books' },
-      { label: 'Digital Products', href: '/shop/collections/digital' },
-      { label: 'Merchandise', href: '/shop/collections/apparel' },
-      { label: 'Order Support', href: '/help#orders' },
-    ],
+    links: features.shopOpen
+      ? [
+          { label: 'Books', href: '/shop/collections/books' },
+          { label: 'Digital Products', href: '/shop/collections/digital' },
+          { label: 'Merchandise', href: '/shop/collections/apparel' },
+          { label: 'Order Support', href: '/help#orders' },
+        ]
+      : [{ label: 'Coming soon', href: '/shop' }],
   },
   {
     title: 'App',

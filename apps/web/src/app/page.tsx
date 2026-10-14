@@ -165,12 +165,27 @@ export default function HomePage() {
       </section>
 
       {/* Shop */}
-      <section className="container-x py-20 sm:py-24">
-        <Reveal><Heading action={more('/shop', 'Shop all')}>Guides, planners and good gear</Heading></Reveal>
-        <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-9 lg:grid-cols-4">
-          {shopPicks.map((p, i) => <Reveal key={p.slug} delay={i * 70}><ProductCard p={p} /></Reveal>)}
-        </div>
-      </section>
+      {features.shopOpen ? (
+        <section className="container-x py-20 sm:py-24">
+          <Reveal><Heading action={more('/shop', 'Shop all')}>Guides, planners and good gear</Heading></Reveal>
+          <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-9 lg:grid-cols-4">
+            {shopPicks.map((p, i) => <Reveal key={p.slug} delay={i * 70}><ProductCard p={p} /></Reveal>)}
+          </div>
+        </section>
+      ) : (
+        <section className="container-x py-20 sm:py-24">
+          <Reveal>
+            <Link href="/shop" className="group flex flex-col items-center gap-6 rounded-[var(--radius-panel)] bg-paper p-8 ring-1 ring-line transition hover:ring-teal/40 sm:flex-row sm:p-10">
+              <AliceFace mood="shopping" size={140} />
+              <span className="flex-1 text-center sm:text-left">
+                <span className="block text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold leading-tight text-teal-deep">The Billix Shop is coming soon</span>
+                <span className="mt-2 block text-muted">Guides, planners and Billix gear. Get one email when it opens.</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-teal-ink">Get notified <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden /></span>
+            </Link>
+          </Reveal>
+        </section>
+      )}
 
       {/* App + newsletter */}
       <section className="container-x pb-20 sm:pb-24">

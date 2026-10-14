@@ -43,6 +43,14 @@ cd apps/web && npm run test:e2e   # Playwright (builds and starts the site)
 cd apps/api && .venv/bin/pytest && .venv/bin/ruff check .
 ```
 
+## Shop on/off
+
+The shop is closed by default: `/shop` shows a "coming soon" page with a waitlist, and
+products, prices, collections and the cart are hidden everywhere. To work on it, set
+`NEXT_PUBLIC_SHOP_OPEN=true` in `apps/web/.env.local` (or on a Vercel preview). To launch
+it, add the same variable to the Vercel project's Production environment and redeploy.
+Products live in `apps/web/src/content/products.ts`.
+
 ## Editing content
 
 All editorial content is typed data in `apps/web/src/content/`. Every factual claim cites a source with `[^n]`; the content-integrity tests fail on broken citations, unknown internal links, emoji, or products marked for sale. To publish a video, set its `youtubeId` in `src/content/videos.ts`.

@@ -5,7 +5,8 @@ import { ArrowRight, BookOpen, Download, Gift, Truck } from 'lucide-react'
 import { collections, visibleProducts } from '@/content/products'
 import { productImages } from '@/content/product-images'
 import { ProductCard } from '@/components/shop/product-ui'
-import { CollectionNav, ShopNotice } from '@/components/shop/shop-chrome'
+import { CollectionNav, ShopClosed, ShopNotice } from '@/components/shop/shop-chrome'
+import { features } from '@/config/site'
 import { AliceFace } from '@/components/brand/alice'
 import { Reveal } from '@/components/ui/reveal'
 
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
 }
 
 export default function ShopPage() {
+  if (!features.shopOpen) return <ShopClosed />
   const featured = visibleProducts.filter((p) => p.featured)
   const heroImg = productImages['starter-bundle']?.[1] ?? productImages['classic-tee']?.[1]
   return (

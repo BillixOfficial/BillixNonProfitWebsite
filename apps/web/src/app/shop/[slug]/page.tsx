@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { Check, RotateCcw, ShieldCheck, Truck } from 'lucide-react'
 import { collections, formatPrice, visibleProducts } from '@/content/products'
 import { productImages } from '@/content/product-images'
-import { siteUrl } from '@/config/site'
+import { features, siteUrl } from '@/config/site'
 import { AddToBag, ProductCard, ProductGallery } from '@/components/shop/product-ui'
 import { ShopNotice } from '@/components/shop/shop-chrome'
 
@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: PageProps<'/shop/[slug]'>): P
 const formatLabel = { paperback: 'Paperback', ebook: 'Ebook (PDF + EPUB)', 'digital-download': 'Printable PDF', apparel: 'Apparel', accessory: 'Accessory', bundle: 'Bundle' } as const
 
 export default async function ProductPage({ params }: PageProps<'/shop/[slug]'>) {
+  if (!features.shopOpen) redirect('/shop')
   const { slug } = await params
   const p = visibleProducts.find((x) => x.slug === slug)
   if (!p) notFound()
