@@ -46,6 +46,7 @@ export const primaryNav: NavItem[] = [
   { label: 'Compare', href: '/compare' },
   { label: 'Shop', href: '/shop' },
   { label: 'Community', href: '/community' },
+  { label: 'Bill of the Month', href: '/bill-of-the-month' },
   { label: 'Get the App', href: '/app' },
 ]
 

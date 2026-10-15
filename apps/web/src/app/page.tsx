@@ -75,6 +75,17 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Bill of the Month promo */}
+      <section aria-labelledby="botm-h" className="border-b border-line bg-highlight">
+        <div className="container-x flex flex-col items-start gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 id="botm-h" className="text-2xl font-extrabold leading-tight text-teal-night sm:text-3xl">Bill of the Month: $50 toward a bill, every round.</h2>
+            <p className="mt-1 text-teal-night/80">Free to enter. No bill needed. One random winner each round.</p>
+          </div>
+          <Link href="/bill-of-the-month" className="group inline-flex shrink-0 items-center gap-2 rounded-full bg-teal-night px-6 py-3.5 font-semibold text-cream transition hover:bg-teal-deep">Enter now <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden /></Link>
+        </div>
+      </section>
+
       {/* Ticker of bill terms */}
       <div className="group overflow-hidden border-b border-line bg-paper py-3" aria-label="Billing terms from the glossary">
         <ul className="flex w-max animate-[marquee_60s_linear_infinite] gap-2 group-hover:[animation-play-state:paused] motion-reduce:animate-none">
