@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { features } from '@/config/site'
 import { collections, visibleProducts } from '@/content/products'
 import { ProductCard } from '@/components/shop/product-ui'
 import { CollectionNav, ShopNotice } from '@/components/shop/shop-chrome'
@@ -15,6 +16,7 @@ export async function generateMetadata({ params }: PageProps<'/shop/collections/
 }
 
 export default async function CollectionPage({ params }: PageProps<'/shop/collections/[collection]'>) {
+  if (!features.shopOpen) redirect('/shop')
   const { collection } = await params
   const c = collections.find((x) => x.slug === collection)
   if (!c) notFound()

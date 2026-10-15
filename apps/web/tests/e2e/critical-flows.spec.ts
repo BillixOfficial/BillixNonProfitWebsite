@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-// The API is mocked so these tests cover the website alone; apps/api has its own tests.
-const API = 'http://localhost:8000'
+// The API is mocked (any base URL) so these tests never touch the live function.
 
 test('homepage hero bill explains a line when tapped', async ({ page }) => {
   await page.goto('/')
@@ -29,11 +28,12 @@ test('search finds glossary terms and articles', async ({ page }) => {
   await expect(page.getByRole('link', { name: /escrow/i }).first()).toBeVisible()
 })
 
-test('every category page renders all 13 sections', async ({ page }) => {
+test('every category page renders its sections (related products hidden while the shop is closed)', async ({ page }) => {
   await page.goto('/categories/water-sewer')
-  for (const id of ['overview', 'how-it-works', 'charges', 'why-costs-rise', 'read-your-bill', 'review', 'tools', 'compare', 'videos', 'articles', 'faq', 'by-state', 'shop']) {
+  for (const id of ['overview', 'how-it-works', 'charges', 'why-costs-rise', 'read-your-bill', 'review', 'tools', 'compare', 'videos', 'articles', 'faq', 'by-state']) {
     await expect(page.locator(`section#${id}`)).toHaveCount(1)
   }
+  await expect(page.locator('section#shop')).toHaveCount(0)
   await expect(page.getByRole('heading', { name: 'Sources' })).toBeVisible()
 })
 
@@ -49,7 +49,7 @@ test('electricity calculator computes a bill from user inputs', async ({ page })
 
 test('newsletter signup sends consent and shows the confirm state', async ({ page }) => {
   let body: Record<string, unknown> | null = null
-  await page.route(`${API}/v1/newsletter/subscribe`, async (route) => {
+  await page.route('**/v1/newsletter/subscribe', async (route) => {
     body = route.request().postDataJSON()
     await route.fulfill({ status: 202, json: { message: 'ok' }, headers: { 'access-control-allow-origin': '*' } })
   })
@@ -64,17 +64,15 @@ test('newsletter signup sends consent and shows the confirm state', async ({ pag
   expect(body).toMatchObject({ email: 'reader@example.com', consent: true, website: '' })
 })
 
-test('bag works and checkout is honest about launch', async ({ page }) => {
+test('shop stays closed: no products, prices or cart until it opens', async ({ page }) => {
+  await page.goto('/shop')
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('coming soon')
+  await expect(page.getByText('$', { exact: false })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: /Shopping bag/ })).toHaveCount(0)
   await page.goto('/shop/classic-tee')
-  await page.getByRole('button', { name: /Add to bag/ }).click()
-  await expect(page.getByText('Choose a size.')).toBeVisible()
-  await page.getByRole('button', { name: 'M', exact: true }).click()
-  await page.getByRole('button', { name: /Add to bag/ }).click()
-  await expect(page.getByRole('link', { name: /Shopping bag, 1 item/ })).toBeVisible()
+  await expect(page).toHaveURL(/\/shop$/)
   await page.goto('/cart')
-  await expect(page.getByText('Size: M')).toBeVisible()
-  await page.getByRole('button', { name: 'Checkout' }).click()
-  await expect(page.getByRole('dialog')).toContainText('Checkout opens at launch')
+  await expect(page).toHaveURL(/\/shop$/)
 })
 
 test('unknown pages return the 404 view', async ({ page }) => {

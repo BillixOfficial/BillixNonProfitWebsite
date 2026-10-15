@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getArticlesByCategory, getCategories, getCategory, getProductsByCategory, getToolsBySlugs, getVideosByCategory } from '@/lib/content'
 import { toPlainText } from '@/lib/inline'
+import { features } from '@/config/site'
 import { Inline, SourceList } from '@/components/content/rich-text'
 import { ArticleCard, ProductCard, ToolCard, VideoCard } from '@/components/content/cards'
 import { AliceFace, AliceNote, categoryMood } from '@/components/brand/alice'
@@ -85,7 +86,7 @@ export default async function CategoryPage({ params }: PageProps<'/categories/[s
           <nav aria-label="On this page" className="sticky top-24">
             <p className="eyebrow text-muted">On this page</p>
             <ol className="mt-3 space-y-1.5 border-l border-line text-[0.9rem]">
-              {toc.map(([id, label]) => (
+              {toc.filter(([id]) => id !== 'shop' || features.shopOpen).map(([id, label]) => (
                 <li key={id}><a href={`#${id}`} className="-ml-px block border-l-2 border-transparent pl-3 text-muted hover:border-gold hover:text-teal-deep">{label}</a></li>
               ))}
             </ol>
@@ -225,6 +226,7 @@ export default async function CategoryPage({ params }: PageProps<'/categories/[s
             <ButtonLink href="/states" variant="ghost" className="mt-5" arrow>Find your state</ButtonLink>
           </section>
 
+          {features.shopOpen && (
           <section id="shop">
             <H2 id="shop-h" n={13}>Related products</H2>
             {products.length ? (
@@ -233,6 +235,7 @@ export default async function CategoryPage({ params }: PageProps<'/categories/[s
               <p className="mt-4 text-muted">No related products planned yet. <Link href="/shop" className="font-semibold text-teal-ink underline">Preview the shop</Link>.</p>
             )}
           </section>
+          )}
 
           <AliceNote title="A note from Alice">Found something out of date or wrong? <Link href="/contact?topic=correction" className="font-semibold text-teal-ink underline">Tell us</Link> and we&rsquo;ll review it.</AliceNote>
           <SourceList sources={c.sources} citePrefix={cite} />

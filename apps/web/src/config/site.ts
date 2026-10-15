@@ -59,6 +59,12 @@ export const appStores = {
 
 /** Feature flags. Flip to true only when the feature is genuinely live. */
 export const features = {
+  /**
+   * Shop visibility. While false, /shop shows a "coming soon" page and every product,
+   * price, collection and the cart are hidden across the site. Set
+   * NEXT_PUBLIC_SHOP_OPEN=true (e.g. locally or on a preview deploy) to work on it.
+   */
+  shopOpen: process.env.NEXT_PUBLIC_SHOP_OPEN === 'true',
   shopCheckout: false,
   accounts: false,
   askAlice: false,

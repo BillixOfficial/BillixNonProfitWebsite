@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { siteUrl } from '@/config/site'
+import { features, siteUrl } from '@/config/site'
 import { getAllArticles, getCategories, getVideos } from '@/lib/content'
 import { states } from '@/content/states'
 import { infoPages } from '@/content/pages'
@@ -15,6 +15,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const s of states) if (s.guidePublished) entries.push({ url: siteUrl(`/states/${s.slug}`) })
   for (const p of infoPages) entries.push({ url: siteUrl(`/${p.slug}`) })
   for (const p of legalPages) entries.push({ url: siteUrl(`/legal/${p.slug}`), lastModified: p.updated })
-  for (const c of collections) entries.push({ url: siteUrl(`/shop/collections/${c.slug}`) })
+  if (features.shopOpen) for (const c of collections) entries.push({ url: siteUrl(`/shop/collections/${c.slug}`) })
   return entries
 }

@@ -6,6 +6,7 @@
 import { getAllArticles, getCategories, getGlossary, getTools, getVideos, articlePlainText } from './content'
 import { products, formatPrice } from '@/content/products'
 import { states } from '@/content/states'
+import { features } from '@/config/site'
 import { toPlainText } from './inline'
 
 export type SearchType = 'article' | 'update' | 'category' | 'glossary' | 'tool' | 'video' | 'product' | 'state'
@@ -87,7 +88,7 @@ export function buildIndex(): SearchDoc[] {
       body: (v.chapters ?? []).map((c) => c.label).join(' ') + ' ' + (v.transcript ?? ''),
     })
   }
-  for (const p of products) {
+  for (const p of features.shopOpen ? products : []) {
     if (p.status === 'draft') continue
     docs.push({
       type: 'product',
