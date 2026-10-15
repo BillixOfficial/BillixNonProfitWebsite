@@ -80,10 +80,13 @@ export const footerNav: { title: string; links: NavLink[] }[] = [
     title: 'Company',
     links: [
       { label: 'About', href: '/about' },
+      { label: 'Our Mission', href: '/mission' },
       { label: 'Meet Alice', href: '/meet-alice' },
       { label: 'Contact', href: '/contact' },
       { label: 'Press', href: '/press' },
       { label: 'Partnerships', href: '/partnerships' },
+      { label: 'Work With Us', href: '/work-with-us' },
+      { label: 'For Relief Programs', href: '/business' },
       { label: 'Careers', href: '/careers' },
     ],
   },

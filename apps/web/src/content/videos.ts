@@ -3,30 +3,34 @@ import type { Video } from './types'
 /**
  * Alice's videos. `youtubeId` stays null until a video is public on the Billix
  * channel; set it then and the page switches from "coming soon" to an embed.
- * Sources mirror each video's pinned comment.
+ * Titles and durations match YouTube (hashtags left off). Sources mirror each
+ * video's pinned comment. Uploads not listed here still appear on /videos via
+ * the channel feed (src/lib/youtube.ts).
  */
 const A = '2026-10-13'
 
 export const videos: Video[] = [
   {
     slug: 'welcome-to-billix',
-    title: 'Welcome to Billix: Your Bills, Explained',
+    title: 'You’re Paying Bills. But Do You Understand Them?',
     description:
       'Can you explain every line on your bills? Billix breaks down the bills every home pays: electricity, heating, water and sewer, internet and phone, then housing, insurance, car costs, subscriptions and the fees that sneak onto everything else.',
     kind: 'video',
-    youtubeId: null,
-    duration: '2:08',
+    youtubeId: 'GrlaEHJ5krI',
+    uploadedAt: '2026-10-13T05:08:32Z',
+    duration: '2:05',
     category: 'channel',
     thumbnail: '/videos/welcome-to-billix.png',
     sources: [],
   },
   {
     slug: 'electric-bill-line-by-line',
-    title: 'Why Is My Electric Bill So High? (Reading It Line by Line)',
+    title: 'Why Is My Electric Bill So High? (The Hidden Charges Explained)',
     description:
       'Read your electric bill with Alice, line by line: how much you used, supply vs. delivery, the fixed customer charge, riders and taxes. Then three checks that tell you why a bill is high, plus the catch-up bill limit many people don’t know about.',
     kind: 'video',
-    youtubeId: null,
+    youtubeId: 'CcGIIwSSS2M',
+    uploadedAt: '2026-10-13T14:07:32Z',
     duration: '5:18',
     category: 'electricity',
     thumbnail: '/videos/electric-bill-line-by-line.png',
@@ -58,7 +62,8 @@ export const videos: Video[] = [
     description:
       'If your house runs on heating oil, should you switch to gas, a heat pump or mini-splits? Three questions decide it: Is gas at your street? What’s your break-even number? And what does your house actually need?',
     kind: 'video',
-    youtubeId: null,
+    youtubeId: 'xaaH5HTs0J4',
+    uploadedAt: '2026-10-12T04:28:07Z',
     duration: '5:56',
     category: 'heating-cooling',
     thumbnail: '/videos/leaving-oil-heat.png',
@@ -86,7 +91,8 @@ export const videos: Video[] = [
     description:
       'Homes use less water than they used to, so why do bills keep climbing? Old pipes, fixed costs and new safety rules. Plus a free 10-minute leak test.',
     kind: 'short',
-    youtubeId: null,
+    youtubeId: 'S7rrLvWBpjs',
+    uploadedAt: '2026-10-10T20:44:36Z',
     duration: '0:43',
     category: 'water-sewer',
     thumbnail: '/videos/why-water-bills-rise.png',
@@ -100,12 +106,13 @@ export const videos: Video[] = [
   },
   {
     slug: 'who-owns-your-water',
-    title: 'Who Owns Your Water? (It Can Change Your Bill)',
+    title: 'Who Owns Your Water? It Decides Your Bill',
     description:
       'About 8 in 10 Americans get water from local government and about 1 in 10 from a private system. Who owns yours decides who sets your rate. Here’s what studies found and how to look yours up.',
     kind: 'short',
-    youtubeId: null,
-    duration: '0:50',
+    youtubeId: 'mIEovPtb5Bc',
+    uploadedAt: '2026-10-11T13:00:04Z',
+    duration: '0:42',
     category: 'water-sewer',
     thumbnail: '/videos/who-owns-your-water.png',
     sources: [
@@ -115,10 +122,11 @@ export const videos: Video[] = [
   },
   {
     slug: 'oil-heat-short',
-    title: '$6 Oil: Should You Switch?',
+    title: 'Oil vs Gas vs Heat Pumps: Which Heating System Saves You the Most Money?',
     description: 'The 27-second version: oil, gas or heat pump, and the one number that decides it.',
     kind: 'short',
-    youtubeId: null,
+    youtubeId: 'V4b7qlhraJY',
+    uploadedAt: '2026-10-12T04:14:05Z',
     duration: '0:27',
     category: 'heating-cooling',
     thumbnail: '/videos/oil-heat-short.png',
@@ -129,10 +137,11 @@ export const videos: Video[] = [
   },
   {
     slug: 'delivery-costs-more',
-    title: 'Why Delivery Can Cost More Than the Electricity',
+    title: 'Why Does Delivering Electricity Cost So Much?',
     description: 'Your electric bill has two halves. Here’s why the delivery half can be the bigger one.',
     kind: 'short',
-    youtubeId: null,
+    youtubeId: 'S09o4xGDq78',
+    uploadedAt: '2026-10-13T01:27:40Z',
     duration: '0:28',
     category: 'electricity',
     thumbnail: '/videos/delivery-costs-more.png',

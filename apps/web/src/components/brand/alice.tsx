@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 import type { ReactNode } from 'react'
 import type { AlicePose, CategorySlug } from '@/content/types'
 
@@ -87,7 +88,7 @@ export function AliceFace({
 }) {
   const [w, h] = looks[mood]
   return (
-    <span className={clsx('relative inline-grid shrink-0 place-items-end justify-center', className)} style={{ width: size, height: size }}>
+    <span className={twMerge('relative inline-grid shrink-0 place-items-end justify-center', className)} style={{ width: size, height: size }}>
       {backdrop && <span aria-hidden className="absolute inset-x-[4%] bottom-0 top-[8%] rounded-full bg-gold-soft" />}
       <Image
         src={src(mood)}
@@ -108,7 +109,7 @@ export function AliceFace({
 export function AliceAvatar({ size = 48, className, mood = 'hello' }: { size?: number; className?: string; mood?: AliceMood }) {
   const [w, h] = looks[mood]
   return (
-    <span className={clsx('relative inline-block shrink-0 overflow-hidden rounded-full bg-gold-soft ring-2 ring-white', className)} style={{ width: size, height: size }}>
+    <span className={twMerge('relative inline-block shrink-0 overflow-hidden rounded-full bg-gold-soft ring-2 ring-white', className)} style={{ width: size, height: size }}>
       <Image src={src(mood)} alt="Alice" width={w} height={h} quality={90} loading="eager" className="absolute left-1/2 top-[4%] h-[175%] w-auto max-w-none -translate-x-1/2 object-contain" sizes={`${size * 2}px`} />
     </span>
   )

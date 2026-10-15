@@ -9,6 +9,7 @@ import type { ToolEntry } from '@/content/tools'
 import { CategoryIcon, categoryTone } from '@/components/ui/icons'
 import { Badge, ComingSoonBadge, formatDate } from '@/components/ui/primitives'
 import { readingMinutes } from '@/lib/content'
+import type { ChannelUpload } from '@/lib/youtube'
 
 const cardBase =
   'group relative flex h-full flex-col rounded-[var(--radius-card)] border border-line bg-paper shadow-[var(--shadow-card)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-teal/40 hover:shadow-[var(--shadow-lift)]'
@@ -65,6 +66,25 @@ export function VideoCard({ v, priority }: { v: Video; priority?: boolean }) {
         <h3 className="mt-2 text-lg font-semibold leading-snug text-teal-deep">{v.title}</h3>
       </div>
     </Link>
+  )
+}
+
+/** A channel upload without its own page yet: opens on YouTube. */
+export function ChannelUploadCard({ u }: { u: ChannelUpload }) {
+  return (
+    <a href={u.url} target="_blank" rel="noopener noreferrer" className={clsx(cardBase, 'overflow-hidden')}>
+      <div className="relative aspect-video overflow-hidden bg-teal-deep">
+        <Image src={`https://i.ytimg.com/vi/${u.id}/hqdefault.jpg`} alt="" fill sizes="(min-width: 1024px) 380px, 90vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+        <span className="absolute inset-0 grid place-items-center">
+          <span className="grid size-14 place-items-center rounded-full bg-gold text-teal-night shadow-lg transition-transform group-hover:scale-110"><Play className="ml-0.5 size-6" fill="currentColor" aria-hidden /></span>
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        <p className="eyebrow text-teal-ink">{u.isShort ? 'Short' : 'Video'} · {formatDate(u.publishedAt.slice(0, 10))}</p>
+        <h3 className="mt-2 text-lg font-semibold leading-snug text-teal-deep">{u.title}</h3>
+        <span className="mt-auto inline-flex items-center gap-1 pt-3 text-sm font-semibold text-teal-ink">Watch on YouTube <ArrowUpRight className="size-4" aria-hidden /><span className="sr-only">(opens in a new tab)</span></span>
+      </div>
+    </a>
   )
 }
 
