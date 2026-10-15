@@ -50,7 +50,7 @@ function Dropdown({ item, pathname }: { item: NavItem; pathname: string }) {
         aria-controls={id}
         onClick={() => setOpen((o) => !o)}
         className={clsx(
-          'flex items-center gap-1 rounded-full px-3 py-2 text-[0.93rem] font-medium transition-colors hover:bg-teal-deep/6',
+          'flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-2 text-[0.93rem] font-medium transition-colors hover:bg-teal-deep/6',
           isActive(pathname, item.href) ? 'text-teal-deep' : 'text-teal-deep/80',
         )}
       >
@@ -128,7 +128,7 @@ export function SiteHeader() {
         <Logo />
         <nav aria-label="Main" className="ml-4 hidden flex-1 xl:block">
           <ul className="flex items-center gap-0.5">
-            {primaryNav.map((item) =>
+            {primaryNav.filter((item) => item.href !== '/').map((item) =>
               item.children ? (
                 <Dropdown key={item.label} item={item} pathname={pathname} />
               ) : (
@@ -137,8 +137,9 @@ export function SiteHeader() {
                     href={item.href}
                     aria-current={isActive(pathname, item.href) ? 'page' : undefined}
                     className={clsx(
-                      'rounded-full px-3 py-2 text-[0.93rem] font-medium transition-colors hover:bg-teal-deep/6',
+                      'whitespace-nowrap rounded-full px-2.5 py-2 text-[0.93rem] font-medium transition-colors hover:bg-teal-deep/6',
                       item.href === '/app' ? 'text-teal-ink font-semibold' : 'text-teal-deep/80',
+                      item.href === '/bill-of-the-month' && 'bg-highlight font-semibold text-teal-night hover:bg-highlight/80',
                       isActive(pathname, item.href) && 'text-teal-deep underline decoration-gold decoration-2 underline-offset-[10px]',
                     )}
                   >
@@ -207,7 +208,10 @@ export function SiteHeader() {
                     </ul>
                   </details>
                 ) : (
-                  <Link href={item.href} className="block py-3 text-lg font-semibold text-teal-deep">{item.label}</Link>
+                  <Link href={item.href} className={clsx('block py-3 text-lg font-semibold text-teal-deep', item.href === '/bill-of-the-month' && 'flex items-center gap-3')}>
+                    {item.label}
+                    {item.href === '/bill-of-the-month' && <span className="rounded-full bg-highlight px-2.5 py-0.5 text-sm font-bold text-teal-night">$50</span>}
+                  </Link>
                 )}
               </li>
             ))}
