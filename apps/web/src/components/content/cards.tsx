@@ -7,7 +7,7 @@ import type { CategoryMeta } from '@/content/category-index'
 import { categoryMeta } from '@/content/category-index'
 import type { ToolEntry } from '@/content/tools'
 import { CategoryIcon, categoryTone } from '@/components/ui/icons'
-import { Badge, ComingSoonBadge, formatDate } from '@/components/ui/primitives'
+import { MetaLine, formatDate } from '@/components/ui/primitives'
 import { readingMinutes } from '@/lib/content'
 import type { ChannelUpload } from '@/lib/youtube'
 
@@ -31,11 +31,8 @@ export function ArticleCard({ a, showCategory = true }: { a: Article; showCatego
   const cat = categoryMeta(a.category)
   return (
     <Link href={`/learn/${a.slug}`} className={clsx(cardBase, 'p-5 sm:p-6')}>
-      <div className="flex flex-wrap items-center gap-2">
-        {a.kind === 'update' ? <Badge tone="gold">Bill update</Badge> : showCategory && <Badge tone="teal">{cat.shortName}</Badge>}
-        {a.kind === 'update' && showCategory && <Badge tone="teal">{cat.shortName}</Badge>}
-      </div>
-      <h3 className="mt-4 text-[1.3rem] font-semibold leading-snug text-teal-deep group-hover:underline group-hover:decoration-gold group-hover:decoration-2 group-hover:underline-offset-4">{a.title}</h3>
+      <MetaLine className="font-semibold text-teal-ink" items={[...(a.kind === 'update' ? ['Bill update'] : []), ...(showCategory ? [cat.shortName] : [])]} />
+      <h3 className="mt-3 text-[1.3rem] font-semibold leading-snug text-teal-deep group-hover:underline group-hover:decoration-gold group-hover:decoration-2 group-hover:underline-offset-4">{a.title}</h3>
       <p className="mt-2 line-clamp-3 text-[0.95rem] leading-relaxed text-muted">{a.description}</p>
       <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-5 text-[0.82rem] text-muted">
         <time dateTime={a.publishedAt}>{formatDate(a.publishedAt)}</time>
@@ -58,7 +55,7 @@ export function VideoCard({ v, priority }: { v: Video; priority?: boolean }) {
             <span className="grid size-14 place-items-center rounded-full bg-gold text-teal-night shadow-lg transition-transform group-hover:scale-110"><Play className="ml-0.5 size-6" fill="currentColor" aria-hidden /></span>
           </span>
         ) : (
-          <ComingSoonBadge className="absolute left-3 top-3" />
+          <span className="absolute left-3 top-3 rounded-md bg-teal-night/85 px-2 py-0.5 text-xs font-semibold text-cream">Coming soon</span>
         )}
       </div>
       <div className="flex flex-1 flex-col p-4 sm:p-5">

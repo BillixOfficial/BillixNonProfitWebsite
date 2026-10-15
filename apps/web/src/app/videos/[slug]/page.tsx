@@ -7,7 +7,7 @@ import { categoryMeta } from '@/content/category-index'
 import { SourceList } from '@/components/content/rich-text'
 import { ArticleCard, ToolCard, VideoCard } from '@/components/content/cards'
 import { ShareTools } from '@/components/content/share-tools'
-import { Badge, ComingSoonBadge } from '@/components/ui/primitives'
+import { ComingSoonBadge, MetaLine } from '@/components/ui/primitives'
 import { NewsletterForm } from '@/components/forms/newsletter-form'
 import { siteUrl } from '@/config/site'
 
@@ -72,7 +72,7 @@ export default async function VideoPage({ params }: PageProps<'/videos/[slug]'>)
                   <Image src={v.thumbnail} alt="" fill priority sizes="(min-width: 1024px) 800px, 100vw" className="object-cover opacity-60" />
                   <div className="absolute inset-0 grid place-items-center p-6 text-center">
                     <div className="rounded-2xl bg-teal-night/85 px-6 py-5 text-cream backdrop-blur">
-                      <ComingSoonBadge />
+                      <ComingSoonBadge className="text-highlight" />
                       <p className="mt-3 font-display text-xl font-semibold">Premiering on YouTube soon</p>
                       <p className="mt-1 text-sm text-cream/75">This video will play here once it&rsquo;s live.</p>
                     </div>
@@ -81,11 +81,7 @@ export default async function VideoPage({ params }: PageProps<'/videos/[slug]'>)
               )}
             </div>
           </div>
-          <div className="mt-8 flex flex-wrap items-center gap-2">
-            <Badge tone="teal">{isShort ? 'Short' : 'Video'}</Badge>
-            {v.category !== 'channel' && <Badge tone="neutral">{categoryMeta(v.category).shortName}</Badge>}
-            <Badge tone="neutral">{v.duration}</Badge>
-          </div>
+          <MetaLine className="mt-8 font-semibold text-teal-ink" items={[isShort ? 'Short' : 'Video', ...(v.category !== 'channel' ? [categoryMeta(v.category).shortName] : []), v.duration]} />
           <h1 className="mt-4 text-[clamp(1.8rem,3.8vw,2.7rem)] font-semibold leading-tight text-teal-deep">{v.title}</h1>
           <p className="prose-billix mt-4 text-muted">{v.description}</p>
           <p className="mt-3 text-sm text-muted">Narrated by Alice, an animated character with an AI-generated voice. Educational only, not financial advice.</p>
