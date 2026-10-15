@@ -1,11 +1,13 @@
-import type { Source, StateCode } from './types'
+import type { Source, StateCode, StateGuide } from './types'
+import { stateGuides } from './state-guides'
 
 export interface StateEntry {
   code: StateCode
   name: string
   slug: string
-  /** Set to true only when a verified state guide has been written and reviewed. */
+  /** True once a researched guide exists in ./state-guides. */
   guidePublished: boolean
+  guide: StateGuide | null
 }
 
 const list: [StateCode, string][] = [
@@ -26,7 +28,8 @@ export const states: StateEntry[] = list.map(([code, name]) => ({
   code,
   name,
   slug: name.toLowerCase().replace(/[^a-z]+/g, '-'),
-  guidePublished: false,
+  guidePublished: stateGuides.has(code),
+  guide: stateGuides.get(code) ?? null,
 }))
 
 export const stateBySlug = (slug: string) => states.find((s) => s.slug === slug)
