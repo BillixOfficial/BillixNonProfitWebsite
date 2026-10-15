@@ -218,3 +218,37 @@ export interface Product {
   /** Short selling points shown on the product page. */
   details?: string[]
 }
+
+/** A named official resource on a state guide. `summary` may use inline markup and citations. */
+export interface StateLink {
+  name: string
+  url: string
+  summary: string
+}
+
+/**
+ * A researched state guide. Every text field uses Billix inline markup, and every
+ * factual claim cites `sources` with [^n]. Leave a section out (null / empty) rather
+ * than guess; the page says so plainly.
+ */
+export interface StateGuide {
+  code: StateCode
+  lastReviewed: ISODate
+  /** One or two sentences: the big picture for household bills in this state. */
+  intro: string
+  /** The state utility commission: what it oversees and how to complain. */
+  regulator: { name: string; url: string; complaintUrl: string; text: string }
+  /** Regulated (one utility sets the price), choice (you can pick a supplier statewide) or partial (some areas / some customers). */
+  electricity: { market: 'regulated' | 'choice' | 'partial'; text: string; shopping: { name: string; url: string } | null }
+  gas: { text: string; shopping: { name: string; url: string } | null }
+  water: { text: string }
+  /** Disconnection protections: winter/summer rules, medical certificates, notice periods. */
+  shutoff: { text: string }
+  /** Bill-payment help. The first entry is the state's LIHEAP office. */
+  help: StateLink[]
+  /** State consumer protection office, usually the attorney general. */
+  consumer: StateLink
+  /** Efficiency and rebate programs run or listed by the state. May be empty. */
+  rebates: StateLink[]
+  sources: Source[]
+}

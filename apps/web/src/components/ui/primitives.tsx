@@ -94,26 +94,18 @@ export function Card({ children, className, as: As = 'div' }: { children: ReactN
   return <As className={clsx('rounded-[var(--radius-card)] border border-line bg-paper shadow-[var(--shadow-card)]', className)}>{children}</As>
 }
 
-type BadgeTone = 'teal' | 'gold' | 'plum' | 'cash' | 'neutral' | 'dark'
-const badgeTones: Record<BadgeTone, string> = {
-  teal: 'bg-teal-soft text-teal-deep',
-  gold: 'bg-gold-soft text-teal-night',
-  plum: 'bg-plum-soft text-[#4c3560]',
-  cash: 'bg-cash-soft text-[#2f4a24]',
-  neutral: 'bg-sand text-teal-deep',
-  dark: 'bg-teal-deep text-cream',
-}
-
-export function Badge({ children, tone = 'neutral', className }: { children: ReactNode; tone?: BadgeTone; className?: string }) {
-  return (
-    <span className={clsx('inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[0.8rem] font-semibold', badgeTones[tone], className)}>
-      {children}
-    </span>
-  )
-}
-
+/** Coming-soon status as plain text, not a pill. Inherits color so it works on dark sections. */
 export function ComingSoonBadge({ className }: { className?: string }) {
-  return <Badge tone="gold" className={className}>Coming soon</Badge>
+  return <p className={clsx('text-sm font-semibold', className)}>Coming soon</p>
+}
+
+/** A quiet line of facts separated by dots: "Video · Electricity · 5:18". */
+export function MetaLine({ items, className }: { items: ReactNode[]; className?: string }) {
+  return (
+    <p className={clsx('flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted', className)}>
+      {items.flatMap((item, i) => (i === 0 ? [<span key={i}>{item}</span>] : [<span key={`d${i}`} aria-hidden>·</span>, <span key={i}>{item}</span>]))}
+    </p>
+  )
 }
 
 export function Callout({ tone = 'note', title, children }: { tone?: 'tip' | 'note' | 'warning'; title?: string; children: ReactNode }) {

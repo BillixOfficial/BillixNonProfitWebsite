@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ElectricityCalculator } from '@/components/calculators/electricity-calculator'
 import { AliceFace, AliceNote } from '@/components/brand/alice'
-import { Badge, PageHeader, Section } from '@/components/ui/primitives'
+import { MetaLine, PageHeader, Section } from '@/components/ui/primitives'
 import { SourceList } from '@/components/content/rich-text'
 
 export const metadata: Metadata = {
@@ -15,7 +15,7 @@ export default function ElectricityCostPage() {
   return (
     <>
       <PageHeader title="Electricity Cost Calculator" lede="Rebuild your electric bill from its parts, or price out a single appliance. Uses the numbers from your own bill." aside={<AliceFace mood="determined" size={260} />}>
-        <div className="flex flex-wrap gap-2"><Badge tone="cash">Available</Badge><Badge tone="neutral">No sign-up</Badge><Badge tone="neutral">Nothing is saved or sent</Badge></div>
+        <MetaLine items={['Free', 'No sign-up', 'Nothing is saved or sent']} />
       </PageHeader>
       <Section>
         <ElectricityCalculator />

@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 export default function StatesPage() {
   return (
     <>
-      <PageHeader title="Bill help for every state" lede="Who regulates your utilities, where to find help paying bills, and where to file a complaint. Detailed state guides are added as we verify them." aside={<AliceFace mood="thinking" size={250} />} />
+      <PageHeader title="Bill help for every state" lede="Who regulates your utilities, whether you can choose your supplier, shutoff protections, and where to get help paying bills. Every state guide is sourced from official agencies." aside={<AliceFace mood="thinking" size={250} />} />
       <Section>
-        <Callout tone="note" title="How state guides work">We only publish state details we&rsquo;ve checked against official sources. Until a state&rsquo;s full guide is ready, its page lists national resources that work everywhere.</Callout>
+        <Callout tone="note" title="How state guides work">We only publish state details we&rsquo;ve checked against official sources, and we leave out anything we can&rsquo;t confirm. Each guide shows the date it was reviewed. Rules and programs change, so if something looks out of date, <Link href="/contact?topic=correction" className="font-semibold text-teal-ink underline">tell us</Link>.</Callout>
         <ul className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
           {states.map((s) => (
             <li key={s.code}>

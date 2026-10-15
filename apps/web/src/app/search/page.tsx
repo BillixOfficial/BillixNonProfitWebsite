@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { search, typeLabels } from '@/lib/search'
 import { SearchBox } from '@/components/content/search-box'
-import { Badge, EmptyState, ButtonLink } from '@/components/ui/primitives'
+import { EmptyState, ButtonLink } from '@/components/ui/primitives'
 
 export const metadata: Metadata = {
   title: 'Search',
@@ -32,7 +32,7 @@ async function Results({ searchParams }: { searchParams: PageProps<'/search'>['s
               {hits.map((h) => (
                 <li key={h.type + h.href}>
                   <Link href={h.href} className="block px-5 py-4 transition-colors hover:bg-white">
-                    <Badge tone={h.type === 'glossary' ? 'plum' : h.type === 'tool' ? 'cash' : h.type === 'update' ? 'gold' : 'teal'}>{typeLabels[h.type]}</Badge>
+                    <p className="text-sm font-semibold text-teal-ink">{typeLabels[h.type]}</p>
                     <p className="mt-2 font-display text-lg font-semibold text-teal-deep">{h.title}</p>
                     <p className="mt-1 line-clamp-2 text-[0.95rem] text-muted">{h.description}</p>
                   </Link>

@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { CalendarDays, GraduationCap, MessagesSquare, ScrollText } from 'lucide-react'
 import { QuestionForm, VideoIdeaForm } from '@/components/forms/contact-forms'
 import { AliceFace } from '@/components/brand/alice'
-import { Badge, PageHeader, Section } from '@/components/ui/primitives'
+import { PageHeader, Section } from '@/components/ui/primitives'
 
 export const metadata: Metadata = {
   title: 'Community',
@@ -32,20 +31,19 @@ export default function CommunityPage() {
       </Section>
       <Section tone="paper">
         <h2 className="text-2xl font-semibold text-teal-deep">Coming to the community</h2>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-4 grid gap-x-10 sm:grid-cols-2">
           {[
-            { I: MessagesSquare, t: 'Community discussions', b: 'Moderated threads about bills, by topic.' },
-            { I: ScrollText, t: 'Bill stories', b: 'Real experiences, shared with permission and without personal details.' },
-            { I: GraduationCap, t: 'Expert Q&A', b: 'Sessions with people who work on these bills.' },
-            { I: CalendarDays, t: 'Events', b: 'Live explainers before heating and cooling seasons.' },
-          ].map(({ I, t, b }) => (
-            <div key={t} className="rounded-[var(--radius-card)] border border-dashed border-line p-5">
-              <div className="flex items-center justify-between"><I className="size-6 text-teal-deep/60" aria-hidden /><Badge>Planned</Badge></div>
-              <h3 className="mt-3 font-semibold text-teal-deep">{t}</h3>
-              <p className="mt-1 text-[0.93rem] text-muted">{b}</p>
-            </div>
+            { t: 'Community discussions', b: 'Moderated threads about bills, by topic.' },
+            { t: 'Bill stories', b: 'Real experiences, shared with permission and without personal details.' },
+            { t: 'Expert Q&A', b: 'Sessions with people who work on these bills.' },
+            { t: 'Events', b: 'Live explainers before heating and cooling seasons.' },
+          ].map(({ t, b }) => (
+            <li key={t} className="border-b border-line py-3">
+              <p className="font-semibold text-teal-deep">{t}</p>
+              <p className="text-[0.95rem] text-muted">{b}</p>
+            </li>
           ))}
-        </div>
+        </ul>
       </Section>
     </>
   )

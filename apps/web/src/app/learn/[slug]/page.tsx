@@ -9,7 +9,7 @@ import { Blocks, Inline, SourceList } from '@/components/content/rich-text'
 import { ArticleCard, ToolCard, VideoCard } from '@/components/content/cards'
 import { ShareTools } from '@/components/content/share-tools'
 import { AliceAvatar, AliceFace, categoryMood, moodForPose } from '@/components/brand/alice'
-import { Badge, formatDate } from '@/components/ui/primitives'
+import { MetaLine, formatDate } from '@/components/ui/primitives'
 
 export function generateStaticParams() {
   return getAllArticles().map((a) => ({ slug: a.slug }))
@@ -61,10 +61,7 @@ export default async function ArticlePage({ params }: PageProps<'/learn/[slug]'>
               <Link href={a.kind === 'update' ? '/updates' : '/learn'} className="hover:underline">{a.kind === 'update' ? 'Bill updates' : 'Learn'}</Link> <span aria-hidden>/</span>{' '}
               <Link href={`/categories/${cat.slug}`} className="hover:underline">{cat.shortName}</Link>
             </nav>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {a.kind === 'update' && <Badge tone="gold">Bill update</Badge>}
-              <Badge tone="teal">{cat.shortName}</Badge>
-            </div>
+            <MetaLine className="mt-5 font-semibold text-teal-ink" items={[...(a.kind === 'update' ? ['Bill update'] : []), cat.shortName]} />
             <h1 className="mt-4 text-[clamp(2.2rem,5vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.035em] text-teal-deep">{a.title}</h1>
             <p className="mt-4 text-lg leading-relaxed text-muted sm:text-xl">{a.description}</p>
             <dl className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">

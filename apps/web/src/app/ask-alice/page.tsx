@@ -18,7 +18,7 @@ export default function AskAlicePage() {
       <section className="border-b border-line bg-paper">
         <div className="container-x grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[1fr_auto]">
           <div className="max-w-2xl">
-            <ComingSoonBadge />
+            <ComingSoonBadge className="text-teal-ink" />
             <h1 className="mt-4 text-[clamp(2.4rem,5.5vw,4rem)] font-semibold leading-[1.02] text-teal-deep">Ask Alice</h1>
             <p className="mt-5 text-xl text-muted">A bill assistant that answers from verified Billix guides, shows its sources, and points you to the right calculator. It isn&rsquo;t connected yet, so for now, search our guides.</p>
             <SearchBox className="mt-8" size="md" />

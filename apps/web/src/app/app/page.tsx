@@ -37,7 +37,7 @@ export default function AppPage() {
       <section className="overflow-hidden bg-teal-deep text-cream">
         <div className="container-x grid items-center gap-12 py-16 sm:py-24 lg:grid-cols-2">
           <div>
-            <ComingSoonBadge />
+            <ComingSoonBadge className="text-highlight" />
             <h1 className="mt-5 text-[clamp(2.4rem,5.4vw,4rem)] font-semibold leading-[1.02]">Your household bills, in your pocket</h1>
             <p className="mt-5 max-w-lg text-lg text-cream/75">We&rsquo;re building the Billix app for iPhone and Android. It shares one secure account with this website, so your bills follow you everywhere.</p>
             <div id="download" className="mt-8 max-w-md scroll-mt-28">

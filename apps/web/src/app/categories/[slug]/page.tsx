@@ -6,9 +6,7 @@ import { toPlainText } from '@/lib/inline'
 import { Inline, SourceList } from '@/components/content/rich-text'
 import { ArticleCard, ProductCard, ToolCard, VideoCard } from '@/components/content/cards'
 import { AliceFace, AliceNote, categoryMood } from '@/components/brand/alice'
-import { CategoryIcon, categoryTone } from '@/components/ui/icons'
-import { Badge, ButtonLink, EmptyState, formatDate } from '@/components/ui/primitives'
-import { clsx } from 'clsx'
+import { ButtonLink, EmptyState, MetaLine, formatDate } from '@/components/ui/primitives'
 
 export function generateStaticParams() {
   return getCategories().map((c) => ({ slug: c.slug }))
@@ -72,18 +70,11 @@ export default async function CategoryPage({ params }: PageProps<'/categories/[s
           <nav aria-label="Breadcrumb" className="text-sm text-muted">
             <Link href="/categories" className="hover:underline">Explore bills</Link> <span aria-hidden>/</span> <span>{c.shortName}</span>
           </nav>
-          <div className="mt-6 flex items-start gap-5">
-            <span className={clsx('hidden size-16 shrink-0 place-items-center rounded-2xl sm:grid', categoryTone[c.slug])}>
-              <CategoryIcon slug={c.slug} className="size-8" />
-            </span>
+          <div className="mt-6">
             <div className="max-w-3xl lg:pr-64">
               <h1 className="mt-2 text-[clamp(2.4rem,5.6vw,4.2rem)] font-extrabold leading-[0.98] tracking-[-0.04em] text-teal-deep">{c.name}</h1>
               <p className="mt-4 text-lg leading-relaxed text-muted sm:text-xl"><Inline text={c.tagline} citePrefix={cite} /></p>
-              <p className="mt-5 flex flex-wrap gap-2 text-sm">
-                <Badge tone="teal">United States</Badge>
-                <Badge tone="neutral">Last reviewed {formatDate(c.lastReviewed)}</Badge>
-                <Badge tone="neutral">{c.sources.length} sources</Badge>
-              </p>
+              <MetaLine className="mt-5" items={['United States', `Last reviewed ${formatDate(c.lastReviewed)}`, `${c.sources.length} sources`]} />
             </div>
           </div>
         </div>
