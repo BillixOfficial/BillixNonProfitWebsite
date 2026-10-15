@@ -177,6 +177,8 @@ export interface Video {
   kind: 'video' | 'short'
   /** null until the video is public on YouTube. Set via content once published. */
   youtubeId: string | null
+  /** When the video went public on YouTube (ISO 8601). Used for VideoObject structured data. */
+  uploadedAt?: string
   duration: string
   category: CategorySlug | 'channel'
   thumbnail: string

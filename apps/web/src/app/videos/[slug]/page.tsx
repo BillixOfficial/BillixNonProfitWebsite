@@ -9,6 +9,7 @@ import { ArticleCard, ToolCard, VideoCard } from '@/components/content/cards'
 import { ShareTools } from '@/components/content/share-tools'
 import { Badge, ComingSoonBadge } from '@/components/ui/primitives'
 import { NewsletterForm } from '@/components/forms/newsletter-form'
+import { siteUrl } from '@/config/site'
 
 export function generateStaticParams() {
   return getVideos().map((v) => ({ slug: v.slug }))
@@ -21,6 +22,12 @@ export async function generateMetadata({ params }: PageProps<'/videos/[slug]'>):
   return { title: v.title, description: v.description, alternates: { canonical: `/videos/${v.slug}` }, openGraph: { images: [v.thumbnail] } }
 }
 
+/** "5:18" -> "PT5M18S" for schema.org. */
+const isoDuration = (d: string) => {
+  const [s = 0, m = 0, h = 0] = d.split(':').map(Number).reverse()
+  return `PT${h ? `${h}H` : ''}${m ? `${m}M` : ''}${s}S`
+}
+
 export default async function VideoPage({ params }: PageProps<'/videos/[slug]'>) {
   const { slug } = await params
   const v = getVideo(slug)
@@ -29,9 +36,22 @@ export default async function VideoPage({ params }: PageProps<'/videos/[slug]'>)
   const tools = getToolsBySlugs(v.relatedTools ?? [])
   const more = getVideos().filter((x) => x.slug !== v.slug && (x.category === v.category || x.kind === v.kind)).slice(0, 3)
   const isShort = v.kind === 'short'
+  const jsonLd = v.youtubeId && v.uploadedAt && {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: v.title,
+    description: v.description,
+    thumbnailUrl: siteUrl(v.thumbnail),
+    uploadDate: v.uploadedAt,
+    duration: isoDuration(v.duration),
+    embedUrl: `https://www.youtube.com/embed/${v.youtubeId}`,
+    url: siteUrl(`/videos/${v.slug}`),
+    publisher: { '@type': 'Organization', name: 'Billix', url: siteUrl('/') },
+  }
 
   return (
     <div className="container-x py-10 sm:py-14">
+      {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
       <nav aria-label="Breadcrumb" className="text-sm text-muted"><Link href="/videos" className="hover:underline">Videos</Link> <span aria-hidden>/</span> {isShort ? 'Short' : 'Video'}</nav>
       <div className="mt-6 grid gap-10 lg:grid-cols-[1fr_20rem]">
         <div className="min-w-0">

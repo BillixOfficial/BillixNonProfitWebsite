@@ -14,7 +14,14 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<'/states/[slug]'>): Promise<Metadata> {
   const { slug } = await params
   const s = stateBySlug(slug)
-  return s ? { title: `${s.name} Bill Resources`, description: `Where to find utility regulators, bill assistance and consumer help in ${s.name}.`, alternates: { canonical: `/states/${s.slug}` } } : {}
+  if (!s) return {}
+  return {
+    title: `${s.name} Bill Resources`,
+    description: `Where to find utility regulators, bill assistance and consumer help in ${s.name}.`,
+    alternates: { canonical: `/states/${s.slug}` },
+    // Placeholder pages stay out of search results until the state guide is published.
+    ...(s.guidePublished ? {} : { robots: { index: false, follow: true } }),
+  }
 }
 
 const planned = ['Utility providers', 'Electricity market (regulated or choice)', 'Gas service', 'Water billing resources', 'Consumer protection agencies', 'Utility assistance programs', 'Energy rebates', 'Local cost comparisons']
@@ -48,7 +55,7 @@ export default async function StatePage({ params }: PageProps<'/states/[slug]'>)
             </ul>
           </div>
           <div className="rounded-[var(--radius-card)] border border-line bg-paper p-6">
-            <h2 className="text-xl font-semibold text-teal-deep">Have a {s.name} bill question?</h2>
+            <h2 className="text-xl font-semibold text-teal-deep">Have {/^[AEIO]/.test(s.name) ? 'an' : 'a'} {s.name} bill question?</h2>
             <p className="mt-2 text-muted">Questions from {s.name} help us decide what to research first.</p>
             <ButtonLink href="/community#ask" variant="secondary" size="sm" className="mt-5">Ask a question</ButtonLink>
           </div>

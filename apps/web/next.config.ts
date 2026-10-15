@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
   images: {
     // 90 is used for Alice's illustrations so her pencil texture stays crisp.
     qualities: [75, 90],
+    // Thumbnails for channel uploads that don't have their own page yet (src/lib/youtube.ts).
+    remotePatterns: [{ protocol: 'https', hostname: 'i.ytimg.com', pathname: '/vi/**' }],
     formats: ['image/avif', 'image/webp'],
   },
   turbopack: {
