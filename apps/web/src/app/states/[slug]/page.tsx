@@ -36,7 +36,7 @@ const article = (name: string) => (/^[AEIO]/.test(name) ? 'an' : 'a')
 const marketLabel: Record<StateGuide['electricity']['market'], string> = {
   regulated: 'Regulated: your utility sets the price',
   choice: 'Retail choice: you can pick a supplier',
-  partial: 'Partly open: choice in some areas or for some customers',
+  partial: 'Limited: most households can’t pick a supplier',
 }
 
 export default async function StatePage({ params }: PageProps<'/states/[slug]'>) {
@@ -52,7 +52,7 @@ function LinkList({ items }: { items: StateLink[] }) {
   return (
     <ul className="mt-4 grid gap-4 md:grid-cols-2">
       {items.map((r) => (
-        <li key={r.url} className="rounded-[var(--radius-card)] border border-line bg-white p-5">
+        <li key={r.name + r.url} className="rounded-[var(--radius-card)] border border-line bg-white p-5">
           <a href={r.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-lg font-semibold text-teal-deep underline decoration-1 underline-offset-3 hover:decoration-2">
             {r.name}
             <ExternalLink className="size-4 shrink-0" aria-hidden />
